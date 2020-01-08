@@ -1,0 +1,16 @@
+{
+  "name": "sinonims",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "micro": "^9.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "micro -l tcp://0.0.0.0:${PORT-3000}"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
