@@ -1,26 +1,26 @@
 const { json } = require('micro');
 
-module.exports = async (req, res) => {
-    if (req.method !== 'POST') {
-        res.statusCode = 404;
-        return res.end('Not found :(');
-    }
+const { toLowerCase } = require('./lib/helpers');
+const { DataBase } = require('./lib/DataBase');
+const { chat } = require('./lib/chat');
 
+const db = new DataBase();
+
+module.exports = async (req, res) => {
     const { request, session, version } = await json(req);
+
+    const key = session.session_id;
+
+    if (!db.get(key))
+        db.add(key, { state: 'START' });
 
     res.end(JSON.stringify(
         {
             version,
             session,
             response: {
-                // В свойстве response.text возвращается исходная реплика пользователя.
-                // Если навык был активирован без дополнительной команды,
-                // пользователю нужно сказать "Hello!".
-                text: request.original_utterance || 'Йо!',
-
-                // Свойство response.end_session возвращается со значением false,
-                // чтобы диалог не завершался.
-                end_session: false,
+                text: chat(db, key, request.original_utterance),
+                end_session: request.nlu.tokens.map(toLowerCase).includes('хватит'),
             }
         }
     ));
