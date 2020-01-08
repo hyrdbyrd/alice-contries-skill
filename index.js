@@ -11,10 +11,13 @@ module.exports = async (req, res) => {
     const { request, session, version } = await json(req);
 
     const helloMessage =
-        'Привет! Я помогу тебе подтянуть твои знания в географии!' +
-        'Назови, пожалуйста, интересующий континент.' +
-        'Если тебе не важно какой какой континент учить, скажи "Земля"' +
-        'Если тебе надоест, просто скажи "Алиса, Хватит", и я тот час остановлюсь.';
+        'Привет! Я помогу вам подтянуть ваши знания в географии!' +
+        'Назовите, пожалуйста, интересующий континент.' +
+        'Если вам не важно какой какой континент учить, скажи "Земля".' +
+        'Если вам надоест, просто скажи "Алиса, Хватит", и я тот час остановлюсь.';
+
+    let question = request.original_utterance && contries(request);
+    question = question.question || 'Хм, что-то пошло нет так.';
 
     res.end(JSON.stringify(
         {
@@ -25,7 +28,9 @@ module.exports = async (req, res) => {
                 // Если навык был активирован без дополнительной команды,
                 // пользователю нужно сказать "Hello!".
                 text:
-                    request.original_utterance || helloMessage,
+                    request.original_utterance
+                        ? helloMessage
+                        : question,
 
                 // Свойство response.end_session возвращается со значением false,
                 // чтобы диалог не завершался.
